@@ -6226,6 +6226,7 @@
     return listenerWrapper.bind(null, domEventName, eventSystemFlags, targetContainer);
   }
 
+  // react中事件会调用,比如 click事件
   function dispatchDiscreteEvent(domEventName, eventSystemFlags, container, nativeEvent) {
     var previousPriority = getCurrentUpdatePriority();
     var prevTransition = ReactCurrentBatchConfig.transition;
@@ -6360,6 +6361,7 @@
 
     return null;
   }
+  // 事件类型和事件优先级的映射
   function getEventPriority(domEventName) {
     switch (domEventName) {
       // Used by SimpleEventPlugin:
@@ -10785,9 +10787,13 @@
     return textNode;
   }
   function getCurrentEventPriority() {
+    // The window.event property is used to retrieve the currently pending event within the window
+    // 当前正在处理的事件对象
+    // 对于 微任务会拿到当前正在执行的事件对象
     var currentEvent = window.event;
 
     if (currentEvent === undefined) {
+      // 对于 setTimeout/setInterval 事件，currentEvent 为 undefined
       return DefaultEventPriority;
     }
 

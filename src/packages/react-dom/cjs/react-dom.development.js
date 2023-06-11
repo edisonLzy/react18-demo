@@ -16411,6 +16411,7 @@ function updateWorkInProgressHook() {
       throw new Error('Rendered more hooks than during the previous render.');
     }
 
+    // 基于currentHook创建 WIP上的 hook对象
     currentHook = nextCurrentHook;
     var newHook = {
       memoizedState: currentHook.memoizedState,
@@ -16478,9 +16479,9 @@ function updateReducer(reducer, initialArg, init) {
 
   queue.lastRenderedReducer = reducer;
   var current = currentHook; // The last rebase update that is NOT part of the base state.
-
+  // 上次更新未参与计算的update对象链表
   var baseQueue = current.baseQueue; // The last pending update that hasn't been processed yet.
-
+  // 本次 更新产生的update对象链表
   var pendingQueue = queue.pending;
 
   if (pendingQueue !== null) {
@@ -16501,7 +16502,7 @@ function updateReducer(reducer, initialArg, init) {
         error('Internal error: Expected work-in-progress queue to be a clone. ' + 'This is a bug in React.');
       }
     }
-
+    // current.baseQueue 保存着拼接完整的 baseQueue链表
     current.baseQueue = baseQueue = pendingQueue;
     queue.pending = null;
   }
@@ -16519,6 +16520,7 @@ function updateReducer(reducer, initialArg, init) {
       var updateLane = update.lane;
 
       if (!isSubsetOfLanes(renderLanes, updateLane)) {
+        // 优先级不足，跳过当前update
         // Priority is insufficient. Skip this update. If this is the first
         // skipped update, the previous update/state is the new base
         // update/state.
@@ -16532,6 +16534,7 @@ function updateReducer(reducer, initialArg, init) {
 
         if (newBaseQueueLast === null) {
           newBaseQueueFirst = newBaseQueueLast = clone;
+          // newBaseState 为上次已经经过update对象处理得到的state
           newBaseState = newState;
         } else {
           newBaseQueueLast = newBaseQueueLast.next = clone;
@@ -16562,8 +16565,10 @@ function updateReducer(reducer, initialArg, init) {
         if (update.hasEagerState) {
           // If this update is a state update (not a reducer) and was processed eagerly,
           // we can use the eagerly computed state
+          // 如果存在 EagerState,则使用EagerState作为 newState
           newState = update.eagerState;
         } else {
+          // 否则reducer和action计算新的state
           var action = update.action;
           newState = reducer(newState, action);
         }
@@ -16583,7 +16588,7 @@ function updateReducer(reducer, initialArg, init) {
     if (!objectIs(newState, hook.memoizedState)) {
       markWorkInProgressReceivedUpdate();
     }
-
+    /// 
     hook.memoizedState = newState;
     hook.baseState = newBaseState;
     hook.baseQueue = newBaseQueueLast;
@@ -16895,7 +16900,7 @@ function mountState(initialState) {
   var dispatch = queue.dispatch = dispatchSetState.bind(null, currentlyRenderingFiber$1, queue);
   return [hook.memoizedState, dispatch];
 }
-
+// FC 消费 update计算state的入口
 function updateState(initialState) {
   return updateReducer(basicStateReducer);
 }
@@ -17345,9 +17350,10 @@ function dispatchSetState(fiber, queue, action) {
   if (isRenderPhaseUpdate(fiber)) {
     enqueueRenderPhaseUpdate(queue, update);
   } else {
+    // 将 update对象添加到 updateQueue中
     enqueueUpdate$1(fiber, queue, update);
     var alternate = fiber.alternate;
-
+    // 注意只有在当前fiber上不存在更新的情况下,才会尝试计算 eagerState
     if (fiber.lanes === NoLanes && (alternate === null || alternate.lanes === NoLanes)) {
       // The queue is currently empty, which means we can eagerly compute the
       // next state before entering the render phase. If the new state is the
@@ -25287,7 +25293,7 @@ function scheduleUpdateOnFiber(fiber, lane, eventTime) {
         markRootSuspended$1(root, workInProgressRootRenderLanes);
       }
     }
-
+    // 开始调度 root
     ensureRootIsScheduled(root, eventTime);
 
     if (lane === SyncLane && executionContext === NoContext && (fiber.mode & ConcurrentMode) === NoMode && // Treat `act` as if it's inside `batchedUpdates`, even in legacy mode.
@@ -25451,7 +25457,7 @@ function ensureRootIsScheduled(root, currentTime) {
     newCallbackNode = null;
   } else {
     var schedulerPriorityLevel;
-
+    // react优先级 -> 事件优先级 -> scheduler优先级
     switch (lanesToEventPriority(nextLanes)) {
       case DiscreteEventPriority:
         schedulerPriorityLevel = ImmediatePriority;

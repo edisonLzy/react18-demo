@@ -1,4 +1,5 @@
-import React, { useRef, useState, useTransition } from "react";
+import React, { ReactNode, useRef, useState, useTransition } from "react";
+
 
 export default () => {
   const [count, updateCount] = useState(0);
@@ -6,11 +7,13 @@ export default () => {
 
   function onClick() {
     updateCount(count + 1);
+    setTimeout(() => {
+      updateCount(count + 1);
+    });
+    Promise.resolve().then(() => {
+      updateCount(count + 1);
+    });
   }
 
-  return (
-    <h3 onClick={onClick}>
-      {count}
-    </h3>
-  )
-}
+  return <h3 onClick={onClick}>{count}</h3>;
+};

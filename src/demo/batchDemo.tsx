@@ -1,6 +1,4 @@
 import React, { useRef, useState, useTransition } from "react";
-import ReactDOM from "react-dom";
-
 
 export default () => {
   const [count, updateCount] = useState(0);
@@ -9,30 +7,17 @@ export default () => {
   const domRef = useRef({});
 
   const onClick = () => {
-    // startTransition(() => {
-    //   updateCount(count => count + 1);
-    //   updateCount(count => count + 1);
-    //   updateCount(count => count + 1);
-
-    //   console.log("同步的结果：", domRef.current.innerText);
-    //   Promise.resolve().then(() => {
-    //     console.log("微任务的结果：", domRef.current.innerText);
-    //   });
-    //   setTimeout(() => {
-    //     console.log("宏任务的结果：", domRef.current.innerText);
-    //   });
-    // })
     updateCount(count => count + 1);
-    updateCount(count => count + 1);
-    updateCount(count => count + 1);
-
-    console.log("同步的结果：", domRef.current.innerText);
-    Promise.resolve().then(() => {
-      console.log("微任务的结果：", domRef.current.innerText);
+    startTransition(() => {
+      updateCount(count => count + 2);
+    })
+    updateCount(count => {
+      console.log('count', count);
+      return count + 3;
     });
-    setTimeout(() => {
-      console.log("宏任务的结果：", domRef.current.innerText);
-    });
+    startTransition(() => {
+      updateCount(count => count + 4);
+    })
   };
 
 
