@@ -16168,7 +16168,8 @@ function areHookInputsEqual(nextDeps, prevDeps) {
 
 function renderWithHooks(current, workInProgress, Component, props, secondArg, nextRenderLanes) {
   renderLanes = nextRenderLanes;
-  currentlyRenderingFiber$1 = workInProgress;
+  
+  currentlyRenderingFiber$1 = workInProgress
 
   {
     hookTypesDev = current !== null ? current._debugHookTypes : null;
@@ -16205,7 +16206,7 @@ function renderWithHooks(current, workInProgress, Component, props, secondArg, n
       ReactCurrentDispatcher$1.current = HooksDispatcherOnMountInDEV;
     }
   }
-
+  // 执行函数组件
   var children = Component(props, secondArg); // Check if there was a render phase update
 
   if (didScheduleRenderPhaseUpdateDuringThisPass) {
@@ -26195,7 +26196,7 @@ function renderRootSync(root, lanes) {
         movePendingFibersToMemoized(root, lanes);
       }
     }
-
+    // 这里会创建 WIP Fiber
     prepareFreshStack(root, lanes);
   }
 

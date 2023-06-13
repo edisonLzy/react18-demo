@@ -13,7 +13,8 @@ import './globalLog';
 // import App from './demo/Performance/demo2';
 // import App from './demo/ErrorCatchDemo';
 // import App from './demo/TransitionDemo/demo3';
-import App from './demo/batchDemo'
+// import App from './demo/batchDemo'
+import App from './demo/eagerStatedemo'
 
 const rootEle = document.getElementById('root');
 
